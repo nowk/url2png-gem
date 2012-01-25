@@ -68,6 +68,18 @@ describe Url2png, "site_image_url" do
       it { should_not match /\/t\d+x\d+\// }
     end
   end
+
+
+  context "when :cache option is true" do
+    # TODO mock this to make faster
+    subject { SandBox.site_image_url 'http://google.com/', :cache => true }
+
+    it { should match /cache\.url2png\.com/ }
+
+    context "when there is no location available" do
+      pending "it returns the original no-cache url"
+    end
+  end
 end
 
 
@@ -94,6 +106,12 @@ describe Url2png, "site_image_tag" do
 
     it { should_not match /height='500'|width='300'/ }
     it { should match /height='300'|width='200'/ }
+  end
+
+  context "when :cache option is true" do
+    subject { SandBox.site_image_tag 'http://google.com/', :cache => true }
+
+    it { should match /cache\.url2png\.com/ }
   end
 end
 

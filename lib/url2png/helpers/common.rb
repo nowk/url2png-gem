@@ -1,3 +1,4 @@
+
 module Url2png
   module Helpers
     module Common
@@ -13,7 +14,7 @@ module Url2png
 
         # filter options
         url2png_options = {}
-        [:size, :thumbnail, :browser_size, :delay, :fullscreen].each do |key|
+        [:size, :thumbnail, :browser_size, :delay, :fullscreen, :cache].each do |key|
           url2png_options[key] = options.delete(key) if options.key?(key)
         end
 
@@ -81,19 +82,23 @@ module Url2png
           url_options << "FULL"                         if options[:fullscreen]
           url_options_string = url_options.join('-')
 
-          # build image url
-          File.join(
-            Url2png::Config.api_url(options[:protocol]),
-            Url2png::Config.api_version,
-            Url2png::Config.public_key,
-            token,
-            url_options_string,
-            safe_url
-          )
+          # Returns cache only if cache option is true
+          # TODO use the URL2PNG algorithm when it becomes a standard, this helps us mock
+          Url2png::Cache.url Url2png::Helpers::Common.build_image_url(options[:protocol], token, url_options_string, safe_url), options[:cache]
         end
 
       end
 
+      def build_image_url(protocol, token, url_options_string, safe_url)
+        File.join(
+          Url2png::Config.api_url(protocol),
+          Url2png::Config.api_version,
+          Url2png::Config.public_key,
+          token,
+          url_options_string,
+          safe_url
+        )
+      end
 
     private
 
